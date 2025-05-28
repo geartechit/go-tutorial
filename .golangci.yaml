@@ -1,0 +1,20 @@
+# golangci-lint can be configured per https://golangci-lint.run/usage/configuration/
+version: 2
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+    exclude-functions:
+      - (*github.com/jackc/pgx/v5.Tx).Rollback
+      - (*github.com/jackc/pgx/v5.Tx).Rollback(context.Context)
+      - (github.com/jackc/pgx/v5.Tx).Rollback
+      - (*github.com/jackc/pgx/v5.Tx).Begin
+      - (*github.com/jackc/pgx/v5.Tx).Begin(context.Context)
+      - (github.com/jackc/pgx/v5.Tx).Begin
+
+linters:
+  enable:
+    - errorlint
+    - makezero
+  disable:
+    - unused

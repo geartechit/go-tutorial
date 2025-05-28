@@ -1,0 +1,32 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "queries/"
+    schema: "migrations/"
+    database:
+      uri: ${POSTGRES_CONN_STRING}
+    rules:
+#      - sqlc/db-prepare
+#      - sqlc/optional-params
+    gen:
+      go:
+        package: "queries"
+        out: "queries"
+        emit_db_tags: true
+        emit_result_struct_pointers: true
+        emit_all_enum_values: true
+        emit_enum_valid_method: true
+        emit_interface: true
+        sql_package: "pgx/v5"
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+          - column: "*.joined_at"
+            go_type: "time.Time"
+          - column: "*.created_at"
+            go_type: "time.Time"
+          - column: "*.updated_at"
+            go_type: "time.Time"
+          - column: "*.deleted_at"
+            go_type: "time.Time"
+            nullable: true
