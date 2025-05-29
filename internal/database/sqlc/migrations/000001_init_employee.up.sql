@@ -1,4 +1,4 @@
-create table employees (
+create table if not exists employees (
     "id" uuid primary key default gen_random_uuid(),
     "name" varchar not null,
     "dob" date not null,
