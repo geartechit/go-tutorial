@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"go-tutorial/internal/domain/employee"
 	"go-tutorial/internal/dto"
-	"go.uber.org/zap"
+	"go-tutorial/pkg/logger"
 )
 
 type EmployeeService interface {
@@ -18,10 +18,10 @@ type EmployeeService interface {
 
 type employeeService struct {
 	repo   domain.EmployeeRepository
-	logger *zap.Logger
+	logger logger.Logger
 }
 
-func NewEmployeeService(repo domain.EmployeeRepository, logger *zap.Logger) EmployeeService {
+func NewEmployeeService(repo domain.EmployeeRepository, logger logger.Logger) EmployeeService {
 	return &employeeService{
 		repo:   repo,
 		logger: logger,
@@ -39,7 +39,7 @@ func (s *employeeService) Create(ctx context.Context, req *dto.CreateEmployeeReq
 	}
 	emp, err := s.repo.Create(ctx, e)
 	if err != nil {
-		s.logger.Error("failed to create emp", zap.Error(err))
+		s.logger.Error("failed to create emp", logger.Field{Key: "err", Value: err.Error()})
 	}
 
 	return emp, err
@@ -48,7 +48,7 @@ func (s *employeeService) Create(ctx context.Context, req *dto.CreateEmployeeReq
 func (s *employeeService) GetByID(ctx context.Context, id uuid.UUID) (*domain.Employee, error) {
 	emp, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		s.logger.Error("failed to get employee", zap.Error(err))
+		s.logger.Error("failed to get employee", logger.Field{Key: "err", Value: err.Error()})
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func (s *employeeService) GetByID(ctx context.Context, id uuid.UUID) (*domain.Em
 func (s *employeeService) GetAll(ctx context.Context) ([]*domain.Employee, error) {
 	employees, err := s.repo.GetAll(ctx)
 	if err != nil {
-		s.logger.Error("failed to get employees", zap.Error(err))
+		s.logger.Error("failed to get employees", logger.Field{Key: "err", Value: err.Error()})
 		return nil, err
 	}
 
@@ -78,7 +78,7 @@ func (s *employeeService) Update(ctx context.Context, req *dto.UpdateEmployeeReq
 
 	emp, err := s.repo.Update(ctx, e)
 	if err != nil {
-		s.logger.Error("failed to update employee", zap.Error(err))
+		s.logger.Error("failed to update employee", logger.Field{Key: "err", Value: err.Error()})
 		return nil, err
 	}
 
@@ -89,7 +89,7 @@ func (s *employeeService) Delete(ctx context.Context, id uuid.UUID) (string, err
 	employeeID, err := s.repo.Delete(ctx, id)
 	if err != nil {
 		// can be refactored
-		s.logger.Error("failed to delete employee", zap.Error(err))
+		s.logger.Error("failed to delete employee", logger.Field{Key: "err", Value: err.Error()})
 		return "", err
 	}
 

@@ -20,6 +20,7 @@ func main() {
 
 	cfg := config.LoadConfig()
 	applogger := logger.New(cfg)
+	zaplogger := logger.NewZapLogger(cfg)
 	dtovalidator, err := validator.NewDTOValidator()
 	if err != nil {
 		applogger.Error("error creating dto validator", zap.Error(err))
@@ -34,7 +35,7 @@ func main() {
 	q := queries.New(db.Pool)
 
 	employeeRepo := repositories.NewEmployeeRepository(q)
-	employeeSvc := services.NewEmployeeService(employeeRepo, applogger)
+	employeeSvc := services.NewEmployeeService(employeeRepo, zaplogger)
 	employeeHdr := handlers.NewEmployeeHandler(employeeSvc, applogger, dtovalidator)
 
 	r := router.New(employeeHdr)

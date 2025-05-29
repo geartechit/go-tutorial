@@ -9,13 +9,14 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
+	"go-tutorial/internal/config"
 	"go-tutorial/internal/domain/employee"
 	"go-tutorial/internal/dto"
 	"go-tutorial/internal/handlers"
 	"go-tutorial/internal/mocks"
+	"go-tutorial/pkg/logger"
 	"go-tutorial/pkg/mapper"
 	"go-tutorial/pkg/timeutil"
-	"go.uber.org/zap/zaptest"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,6 +30,7 @@ type EmployeeHandlerTestSuite struct {
 	mockSvc       *mocks.MockEmployeeService
 	mockRepo      *mocks.MockEmployeeRepository
 	mockValidator *mocks.MockDTOValidator
+	logger        logger.Logger
 	recorder      *httptest.ResponseRecorder
 
 	existingEmployee      domain.Employee
@@ -45,14 +47,15 @@ func (s *EmployeeHandlerTestSuite) TearDownTest() {
 }
 
 func (s *EmployeeHandlerTestSuite) SetupTest() {
+	cfg := config.LoadConfig()
 	s.ctrl = gomock.NewController(s.T())
 	s.mockSvc = mocks.NewMockEmployeeService(s.ctrl)
 	s.mockRepo = mocks.NewMockEmployeeRepository(s.ctrl)
 	s.mockValidator = mocks.NewMockDTOValidator(s.ctrl)
+	s.logger = logger.NewZapLogger(cfg)
 
 	s.recorder = httptest.NewRecorder()
-	logger := zaptest.NewLogger(s.T())
-	s.handler = handlers.NewEmployeeHandler(s.mockSvc, logger, s.mockValidator)
+	s.handler = handlers.NewEmployeeHandler(s.mockSvc, s.logger, s.mockValidator)
 
 	s.existingEmployee = domain.Employee{
 		ID:         uuid.New(),
