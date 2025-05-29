@@ -15,6 +15,10 @@ type employeeRepository struct {
 	q *queries.Queries
 }
 
+var (
+	ErrEmployeeNotFound = errors.New("employee not found")
+)
+
 func NewEmployeeRepository(q *queries.Queries) domain.EmployeeRepository {
 	return &employeeRepository{
 		q: q,
@@ -98,7 +102,7 @@ func (r *employeeRepository) Update(ctx context.Context, e *domain.Employee) (*d
 	}
 
 	if existingEmp == nil {
-		return nil, fmt.Errorf("employee not found")
+		return nil, ErrEmployeeNotFound
 	}
 
 	if e.Name != "" {
@@ -156,4 +160,26 @@ func (r *employeeRepository) Delete(ctx context.Context, id uuid.UUID) (string, 
 		return "", err
 	}
 	return deletedID.String(), nil
+}
+
+func (r *employeeRepository) GetAllByDepartmentID(ctx context.Context, departmentID string) ([]*domain.Employee, error) {
+	rows, err := r.q.GetAllEmployeeByDepartmentID(ctx, pgtype.Text{String: departmentID, Valid: true})
+	if err != nil {
+		return nil, err
+	}
+	employees := make([]*domain.Employee, len(rows))
+	for i, row := range rows {
+		employees[i] = &domain.Employee{
+			ID:         row.ID,
+			Name:       row.Name,
+			DOB:        row.Dob.Time,
+			Department: row.Department,
+			JobTitle:   row.JobTitle,
+			Address:    row.Address,
+			JoinedAt:   row.JoinedAt,
+			CreatedAt:  row.CreatedAt,
+			UpdatedAt:  row.UpdatedAt,
+		}
+	}
+	return employees, nil
 }

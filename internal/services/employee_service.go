@@ -14,6 +14,7 @@ type EmployeeService interface {
 	GetAll(ctx context.Context) ([]*domain.Employee, error)
 	Update(ctx context.Context, req *dto.UpdateEmployeeRequest) (*domain.Employee, error)
 	Delete(ctx context.Context, id uuid.UUID) (string, error)
+	GetAllByDepartmentID(ctx context.Context, departmentID string) ([]*domain.Employee, error)
 }
 
 type employeeService struct {
@@ -94,4 +95,14 @@ func (s *employeeService) Delete(ctx context.Context, id uuid.UUID) (string, err
 	}
 
 	return employeeID, nil
+}
+
+func (s *employeeService) GetAllByDepartmentID(ctx context.Context, departmentID string) ([]*domain.Employee, error) {
+	employees, err := s.repo.GetAllByDepartmentID(ctx, departmentID)
+	if err != nil {
+		s.logger.Error("failed to get employees", logger.Field{Key: "err", Value: err.Error()})
+		return nil, err
+	}
+
+	return employees, nil
 }

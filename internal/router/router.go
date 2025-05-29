@@ -6,7 +6,7 @@ import (
 	"go-tutorial/internal/handlers"
 )
 
-func New(employeeHandler *handlers.EmployeeHandler) *chi.Mux {
+func New(employeeHandler *handlers.EmployeeHandler, departmentHandler *handlers.DepartmentHandler) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
@@ -14,6 +14,7 @@ func New(employeeHandler *handlers.EmployeeHandler) *chi.Mux {
 
 	r.Route("/api/v1", func(rg chi.Router) {
 		RegisterEmployeeRoutes(rg, employeeHandler)
+		RegisterDepartmentRoutes(rg, departmentHandler)
 	})
 
 	return r

@@ -6,13 +6,14 @@ import (
 )
 
 type Employee struct {
-	ID         uuid.UUID
-	Name       string
-	DOB        time.Time
-	Department string
-	JobTitle   string
-	Address    string
-	JoinedAt   time.Time
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID           uuid.UUID
+	Name         string
+	DOB          time.Time
+	Department   string
+	JobTitle     string
+	Address      string
+	JoinedAt     time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DepartmentID string
 }

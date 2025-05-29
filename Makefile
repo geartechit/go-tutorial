@@ -18,6 +18,10 @@ migrate-up:
 migrate-down:
 	@./scripts/migrate.sh down
 
+.PHONY: migrate-reset
+migrate-reset:
+	migrate -path internal/database/sqlc/migrations/ -database "postgres://postgres:password@localhost:5432/postgres?sslmode=disable" force 1
+
 .PHONY: mock-gen
 mock-gen:
 	mockgen -source=internal/domain/employee/repository.go -destination=internal/mocks/mock_employee_repository.go -package=mocks

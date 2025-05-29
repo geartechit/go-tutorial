@@ -11,4 +11,5 @@ type EmployeeRepository interface {
 	GetAll(ctx context.Context) ([]*Employee, error)
 	Update(ctx context.Context, e *Employee) (*Employee, error)
 	Delete(ctx context.Context, id uuid.UUID) (string, error)
+	GetAllByDepartmentID(ctx context.Context, departmentID string) ([]*Employee, error)
 }
