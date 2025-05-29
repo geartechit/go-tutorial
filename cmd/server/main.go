@@ -19,7 +19,6 @@ func main() {
 	ctx := context.Background()
 
 	cfg := config.LoadConfig()
-	applogger := logger.New(cfg)
 	zaplogger := logger.NewZapLogger(cfg)
 	dtovalidator, err := validator.NewDTOValidator()
 	if err != nil {
@@ -40,7 +39,7 @@ func main() {
 
 	r := router.New(employeeHdr)
 
-	applogger.Info("starting server", zap.String("port", cfg.Server.Port))
+	zaplogger.Info("starting server", logger.Field{Key: "server port", Value: cfg.Server.Port})
 	if err := http.ListenAndServe(":"+cfg.Server.Port, r); err != nil {
 		applogger.Error("failed to start server", zap.Error(err))
 	}

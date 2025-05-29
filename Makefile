@@ -23,4 +23,3 @@ mock-gen:
 	mockgen -source=internal/domain/employee/repository.go -destination=internal/mocks/mock_employee_repository.go -package=mocks
 	mockgen -source=internal/services/employee_service.go -destination=internal/mocks/mock_employee_service.go -package=mocks
 	mockgen -source=pkg/validator/validator.go -destination=internal/mocks/mock_validator.go -package=mocks
-	mockgen -source=pkg/logger/logger.go -destination=internal/mocks/mock_logger.go -package=mocks
