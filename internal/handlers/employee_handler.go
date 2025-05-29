@@ -139,3 +139,26 @@ func (h *EmployeeHandler) GetEmployees(w http.ResponseWriter, r *http.Request) {
 
 	httputil.WriteSuccess(w, http.StatusOK, resp)
 }
+
+func (h *EmployeeHandler) GetAllEmployeesByDepartmentID(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		h.logger.Error("missing employee ID")
+		httputil.WriteError(w, http.StatusBadRequest, "missing employee ID", nil)
+		return
+	}
+
+	employees, err := h.svc.GetAllByDepartmentID(r.Context(), id)
+	if err != nil {
+		h.logger.Error("error getting employees", logger.Field{Key: "err", Value: err.Error()})
+		httputil.WriteError(w, http.StatusInternalServerError, "error getting employees", nil)
+		return
+	}
+
+	resp := make([]*dto.EmployeeResponse, len(employees))
+	for i, emp := range employees {
+		resp[i] = mapper.ToEmployeeResponse(emp)
+	}
+
+	httputil.WriteSuccess(w, http.StatusOK, resp)
+}

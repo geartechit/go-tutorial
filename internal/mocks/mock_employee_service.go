@@ -82,6 +82,21 @@ func (mr *MockEmployeeServiceMockRecorder) GetAll(ctx interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockEmployeeService)(nil).GetAll), ctx)
 }
 
+// GetAllByDepartmentID mocks base method.
+func (m *MockEmployeeService) GetAllByDepartmentID(ctx context.Context, departmentID string) ([]*domain.Employee, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllByDepartmentID", ctx, departmentID)
+	ret0, _ := ret[0].([]*domain.Employee)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllByDepartmentID indicates an expected call of GetAllByDepartmentID.
+func (mr *MockEmployeeServiceMockRecorder) GetAllByDepartmentID(ctx, departmentID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllByDepartmentID", reflect.TypeOf((*MockEmployeeService)(nil).GetAllByDepartmentID), ctx, departmentID)
+}
+
 // GetByID mocks base method.
 func (m *MockEmployeeService) GetByID(ctx context.Context, id uuid.UUID) (*domain.Employee, error) {
 	m.ctrl.T.Helper()

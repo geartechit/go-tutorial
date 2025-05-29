@@ -30,7 +30,7 @@ values (
     $5,
     $6
 )
-returning id, name, dob, department, job_title, address, joined_at, created_at, updated_at
+returning id, name, dob, department, job_title, address, joined_at, created_at, updated_at, department_id
 `
 
 type CreateEmployeeParams struct {
@@ -62,6 +62,7 @@ func (q *Queries) CreateEmployee(ctx context.Context, arg CreateEmployeeParams) 
 		&i.JoinedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DepartmentID,
 	)
 	return &i, err
 }
@@ -79,7 +80,7 @@ func (q *Queries) DeleteEmployee(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 }
 
 const getAllEmployee = `-- name: GetAllEmployee :many
-select id, name, dob, department, job_title, address, joined_at, created_at, updated_at from employees
+select id, name, dob, department, job_title, address, joined_at, created_at, updated_at, department_id from employees
 `
 
 func (q *Queries) GetAllEmployee(ctx context.Context) ([]*Employee, error) {
@@ -101,6 +102,44 @@ func (q *Queries) GetAllEmployee(ctx context.Context) ([]*Employee, error) {
 			&i.JoinedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.DepartmentID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllEmployeeByDepartmentID = `-- name: GetAllEmployeeByDepartmentID :many
+select id, name, dob, department, job_title, address, joined_at, created_at, updated_at, department_id
+from employees
+where department_id = $1
+`
+
+func (q *Queries) GetAllEmployeeByDepartmentID(ctx context.Context, departmentID pgtype.Text) ([]*Employee, error) {
+	rows, err := q.db.Query(ctx, getAllEmployeeByDepartmentID, departmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*Employee
+	for rows.Next() {
+		var i Employee
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Dob,
+			&i.Department,
+			&i.JobTitle,
+			&i.Address,
+			&i.JoinedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DepartmentID,
 		); err != nil {
 			return nil, err
 		}
@@ -113,7 +152,7 @@ func (q *Queries) GetAllEmployee(ctx context.Context) ([]*Employee, error) {
 }
 
 const getEmployeeById = `-- name: GetEmployeeById :one
-select id, name, dob, department, job_title, address, joined_at, created_at, updated_at from employees
+select id, name, dob, department, job_title, address, joined_at, created_at, updated_at, department_id from employees
 where id = $1
 `
 
@@ -130,6 +169,7 @@ func (q *Queries) GetEmployeeById(ctx context.Context, id uuid.UUID) (*Employee,
 		&i.JoinedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DepartmentID,
 	)
 	return &i, err
 }
@@ -142,19 +182,21 @@ set
     department = coalesce($3, department),
     job_title = coalesce($4, job_title),
     address = coalesce($5, address),
-    joined_at = coalesce($6, joined_at)
-where id = $7
-returning id, name, dob, department, job_title, address, joined_at, created_at, updated_at
+    joined_at = coalesce($6, joined_at),
+    department_id = coalesce($7, department_id)
+where id = $8
+returning id, name, dob, department, job_title, address, joined_at, created_at, updated_at, department_id
 `
 
 type UpdateEmployeeParams struct {
-	Name       string      `db:"name"`
-	Dob        pgtype.Date `db:"dob"`
-	Department string      `db:"department"`
-	JobTitle   string      `db:"job_title"`
-	Address    string      `db:"address"`
-	JoinedAt   time.Time   `db:"joined_at"`
-	ID         uuid.UUID   `db:"id"`
+	Name         string      `db:"name"`
+	Dob          pgtype.Date `db:"dob"`
+	Department   string      `db:"department"`
+	JobTitle     string      `db:"job_title"`
+	Address      string      `db:"address"`
+	JoinedAt     time.Time   `db:"joined_at"`
+	DepartmentID pgtype.Text `db:"department_id"`
+	ID           uuid.UUID   `db:"id"`
 }
 
 // name = coalesce(sqlc.narg('name'), name),
@@ -171,6 +213,7 @@ func (q *Queries) UpdateEmployee(ctx context.Context, arg UpdateEmployeeParams) 
 		arg.JobTitle,
 		arg.Address,
 		arg.JoinedAt,
+		arg.DepartmentID,
 		arg.ID,
 	)
 	var i Employee
@@ -184,6 +227,7 @@ func (q *Queries) UpdateEmployee(ctx context.Context, arg UpdateEmployeeParams) 
 		&i.JoinedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.DepartmentID,
 	)
 	return &i, err
 }

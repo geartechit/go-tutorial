@@ -11,7 +11,6 @@ import (
 	"go-tutorial/internal/services"
 	"go-tutorial/pkg/logger"
 	"go-tutorial/pkg/validator"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -22,7 +21,7 @@ func main() {
 	zaplogger := logger.NewZapLogger(cfg)
 	dtovalidator, err := validator.NewDTOValidator()
 	if err != nil {
-		applogger.Error("error creating dto validator", zap.Error(err))
+		zaplogger.Error("error creating dto validator")
 		return
 	}
 
@@ -35,12 +34,16 @@ func main() {
 
 	employeeRepo := repositories.NewEmployeeRepository(q)
 	employeeSvc := services.NewEmployeeService(employeeRepo, zaplogger)
-	employeeHdr := handlers.NewEmployeeHandler(employeeSvc, applogger, dtovalidator)
+	employeeHdr := handlers.NewEmployeeHandler(employeeSvc, zaplogger, dtovalidator)
 
-	r := router.New(employeeHdr)
+	departmentRepo := repositories.NewDepartmentRepository(q, db.Pool)
+	departmentSvc := services.NewDepartmentService(departmentRepo, zaplogger)
+	departmentHdr := handlers.NewDepartmentHandler(departmentSvc, zaplogger, dtovalidator)
+
+	r := router.New(employeeHdr, departmentHdr)
 
 	zaplogger.Info("starting server", logger.Field{Key: "server port", Value: cfg.Server.Port})
 	if err := http.ListenAndServe(":"+cfg.Server.Port, r); err != nil {
-		applogger.Error("failed to start server", zap.Error(err))
+		zaplogger.Error("failed to start server")
 	}
 }

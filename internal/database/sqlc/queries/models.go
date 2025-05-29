@@ -11,14 +11,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Department struct {
+	ID   string `db:"id"`
+	Name string `db:"name"`
+}
+
 type Employee struct {
-	ID         uuid.UUID   `db:"id"`
-	Name       string      `db:"name"`
-	Dob        pgtype.Date `db:"dob"`
-	Department string      `db:"department"`
-	JobTitle   string      `db:"job_title"`
-	Address    string      `db:"address"`
-	JoinedAt   time.Time   `db:"joined_at"`
-	CreatedAt  time.Time   `db:"created_at"`
-	UpdatedAt  time.Time   `db:"updated_at"`
+	ID           uuid.UUID   `db:"id"`
+	Name         string      `db:"name"`
+	Dob          pgtype.Date `db:"dob"`
+	Department   string      `db:"department"`
+	JobTitle     string      `db:"job_title"`
+	Address      string      `db:"address"`
+	JoinedAt     time.Time   `db:"joined_at"`
+	CreatedAt    time.Time   `db:"created_at"`
+	UpdatedAt    time.Time   `db:"updated_at"`
+	DepartmentID pgtype.Text `db:"department_id"`
 }

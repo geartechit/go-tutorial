@@ -38,7 +38,8 @@ set
     department = coalesce(@department, department),
     job_title = coalesce(@job_title, job_title),
     address = coalesce(@address, address),
-    joined_at = coalesce(@joined_at, joined_at)
+    joined_at = coalesce(@joined_at, joined_at),
+    department_id = coalesce(@department_id, department_id)
 where id = @id
 returning *;
 
@@ -46,3 +47,8 @@ returning *;
 delete from employees
 where id = @id
 returning id;
+
+-- name: GetAllEmployeeByDepartmentID :many
+select *
+from employees
+where department_id = @department_id;

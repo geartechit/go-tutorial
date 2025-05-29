@@ -7,6 +7,7 @@ import (
 
 func RegisterEmployeeRoutes(r chi.Router, h *handlers.EmployeeHandler) {
 	r.Route("/employees", func(rg chi.Router) {
+		rg.Get("/department/{id}", h.GetAllEmployeesByDepartmentID)
 		rg.Get("/", h.GetEmployees)
 		rg.Get("/{id}", h.GetEmployeeByID)
 		rg.Post("/", h.CreateEmployee)

@@ -8,12 +8,14 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
 	CreateEmployee(ctx context.Context, arg CreateEmployeeParams) (*Employee, error)
 	DeleteEmployee(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
 	GetAllEmployee(ctx context.Context) ([]*Employee, error)
+	GetAllEmployeeByDepartmentID(ctx context.Context, departmentID pgtype.Text) ([]*Employee, error)
 	GetEmployeeById(ctx context.Context, id uuid.UUID) (*Employee, error)
 	//     name = coalesce(sqlc.narg('name'), name),
 	//     dob = coalesce(sqlc.narg('dob'), dob),
